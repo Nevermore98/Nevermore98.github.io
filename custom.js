@@ -6,7 +6,7 @@ setTimeout(() => {
     window.location.href === 'http://localhost:8080/' ||
     window.location.href === 'http://monkee.online/' ||
     window.location.href === 'https://monkee.online/' ||
-    window.location.href === 'http://192.168.0.103:8080/'
+    window.location.href === 'https://nevermore98.github.io/'
   ) {
     // toggleButton.style.setProperty('display', 'none', 'important')
     toggleButton.style.display = 'none'
