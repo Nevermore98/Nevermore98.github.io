@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital@0;1&display=swap");
+
+.blog {
+  .blog-hero {
+    margin-bottom: 0;
+    .hero-image {
+      border-radius: 50%;
+      height: 120px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      padding-top: 6px;
+      height: 80px;
+      width: 350px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      font-size: 1.7rem !important;
+    }
+    p {
+      padding-bottom: 6px;
+      margin: 0 auto !important;
+      width: 350px;
+      transform: translateY(-35px) !important;
+      border-radius: 0 0 10px 10px;
+    }
+    .slide-down-button {
+      display: none !important;
+    }
+  }
+}
+// 底部
+.page {
+  padding-bottom: 0 !important;
+}
+.footer-wrapper {
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+
+.blog-page-wrapper {
+  display: none !important;
+}
+
+.page-info {
+  display: none !important;
+}
+// 侧边栏文章数量统计
+.num-wrapper {
+  display: none !important;
+}
+.blog-info-list {
+  display: none !important;
+}
+
+.sidebar > .sidebar-links > li:not(:first-child) {
+  margin-top: 0 !important;
+}
+
+// 目录
+.toc-link {
+  color: #666 !important;
+}
+.toc-link:hover {
+  color: var(--theme-color) !important;
+}
+#toc-list .toc-item.active > .toc-link {
+  color: var(--theme-color) !important;
+  font-weight: bold !important;
+}
+
+// 阅读时间
+.reading-time-info {
+  display: none !important;
+}
+
+// 自定义图片大小
+.middle-img {
+  display: block;
+  width: 400px;
+  margin: auto;
+}
+
+// 自定义 MarkDown 小图居中
+.small-img {
+  display: block;
+  width: 200px;
+  margin: auto;
+}
+
+// 返回顶部上移
+.back-to-top {
+  transform: translateY(-50px);
+}
