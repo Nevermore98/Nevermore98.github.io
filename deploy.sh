@@ -11,6 +11,7 @@ cd docs/.vuepress/dist
 
 git init
 git add -A
+git branch -m main
 git commit -m 'deploy'
 
 # 推送至服务器，注意是 main 分支
