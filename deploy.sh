@@ -13,8 +13,8 @@ git init
 git add -A
 git commit -m 'deploy'
 
-# 推送至服务器，注意是 master 分支
-git push -f git@monkee.online:/home/www/website/blog.git master
+# 推送至服务器，注意是 main 分支
+git push -f git@monkee.online:/home/www/website/blog.git main
 
 # 推送至 github
 git push -u origin main
