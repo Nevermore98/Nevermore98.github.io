@@ -63,7 +63,7 @@
 .toc-link:hover {
   color: var(--theme-color) !important;
 }
-#toc-list .toc-item.active > .toc-link {
+#toc .toc-item.active > .toc-link {
   color: var(--theme-color) !important;
   font-weight: bold !important;
 }
