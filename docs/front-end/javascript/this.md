@@ -203,14 +203,6 @@ obj.add.apply(obj, [3, 3]) // 6 {name: 'obj', add: ƒ}
 
 指向 new 创建的实例对象
 
-使用new关键字来调用函数是，会执行如下的操作：
-
-1. 在内存中创建一个空的临时对象
-2. 将这个临时对象的隐式原型 `[[Prototype]]` 指向构造函数显式原型 `prototype`
-3. 绑定 `this` 到这个临时对象上
-4. 执行构造函数内部的代码（给新对象添加属性）
-5. 返回这个临时对象
-
 ```js:no-line-numbers
 // ES5
 function Person(name) {
@@ -244,6 +236,34 @@ var obj = {
 
 // new 绑定的优先级高于隐式绑定
 var f = new obj.fn() // fn {}
+```
+
+使用new关键字来调用函数是，会执行如下的操作：
+
+1. 在内存中创建一个空的临时对象
+2. 将这个临时对象的隐式原型 `[[Prototype]]` 指向构造函数显式原型 `prototype`
+3. 绑定 `this` 到这个临时对象上
+4. 执行构造函数内部的代码（给新对象添加属性）
+5. 返回这个临时对象
+
+new 操作符执行的操作：
+
+```js:no-line-numbers
+new Person()
+
+// new 相当于执行以下操作：
+function Person(name) {
+  // 1.在内存中创建一个空的临时对象
+  let obj = {}
+  // 2.将这个临时对象的隐式原型指向构造函数的显式原型
+  obj.__proto__ = Person.prototype
+  // 3.绑定 this 到这个临时对象上
+  Person.call(obj)
+  // 4.执行构造函数内部的代码（给新对象添加属性）
+  this.name = 'never'
+  // 5.返回这个临时对象
+  return this
+}
 ```
 
 ## 5.箭头函数

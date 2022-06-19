@@ -8,4 +8,7 @@ export const javascript = arraySidebar([
   'this',
   'functional-programming',
   'with-eval-strict',
+  'promise',
+  'async-await',
+  'promise-implement'
 ])
