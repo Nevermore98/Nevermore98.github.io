@@ -91,3 +91,8 @@
 .back-to-top {
   transform: translateY(-50px);
 }
+.page-title {
+  hr {
+    display: none !important;
+  }
+}
