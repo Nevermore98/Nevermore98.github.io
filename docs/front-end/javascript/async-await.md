@@ -88,6 +88,57 @@ async function fn() {
 })()
 ```
 
+## 异步函数的返回值
+
+异步函数返回值是一个 Promise 对象：
+
+```js:no-line-numbers
+async function foo() {
+  // 1.返回普通值
+  return 'foo 完成'
+
+  // 2.返回 thenable 对象
+  // return {
+  //   then: function(resolve, reject) {
+  //     resolve("thenable 完成")
+  //   }
+  // }
+
+  // 3.返回 Promise
+  // return new Promise((resolve, reject) => {
+  //   setTimeout(() => {
+  //     resolve('Promise 完成')
+  //   }, 1000)
+  // })
+}
+
+foo().then((res) => {
+  console.log('res:', res)
+})
+```
+
+## 异步函数中的异常
+
+异步函数中的异常，会作为 Promise 的 reject 值被捕获到：
+
+```js:no-line-numbers
+async function foo() {
+  throw new Error('报错')
+}
+
+foo().catch((err) => {
+  console.log(err)
+})
+
+console.log('异步函数中报错，后续代码仍会执行')
+
+function bar() {
+  throw new Error('报错')
+}
+bar()
+console.log('同步函数中报错，后续代码不执行')
+```
+
 ## 执行顺序
 
 只要遇到了 `await` ：
