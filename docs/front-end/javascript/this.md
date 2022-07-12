@@ -2,25 +2,39 @@
 title: this 指向
 ---
 
-## 1.默认绑定
+this 指向函数的调用者，其中有 5 种绑定规则：
 
-自执行函数，作为独立函数被调用（默认是挂载到 window 上所以是 window 调用）??
+![this 指向](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220712190005.png)
 
-非严格模式下：this 指向 window 对象
+## 默认绑定
+
+作为独立函数，被全局对象（window 或 global）调用
+
+非严格模式下：
+
+1. 浏览器环境：this 指向 window 对象
+2. Node 环境：this 指向 global 对象
 
 严格模式下：this 为 undefined
 
-浏览器会擅自把未明确指明调用者的函数由 `undefined` 改为 `window`，可以使用 `'use strict'` 告诉浏览器严肃点，别瞎改。
+全局函数、函数赋值给变量再调用，调用者都是全局对象
 
-```js:no-line-numbers:no-line-numbers
-// 案例一：
+案例一：
+
+```js:no-line-numbers
 function foo() {
   console.log(this)
 }
 
 foo() // window
+```
 
-// 案例二：
+案例二：
+
+多个函数连环调用，依然是由全局对象调用
+
+```js:no-line-numbers
+// foo2 -> foo1
 function foo1() {
   console.log(this) // window
 }
@@ -30,39 +44,49 @@ function foo2() {
   foo1()
 }
 
-function foo3() {
-  console.log(this) // window
-  foo2()
-}
+foo2()
+```
 
-foo3()
+案例三：
 
+将字面量对象的方法的地址赋值给变量，再通过变量调用，依然是由全局对象调用
 
-// 案例三：
-var obj = {
-  name: "nevermore",
+```js:no-line-numbers
+let obj = {
+  name: 'obj',
   foo: function() {
     console.log(this)
-  }
+  },
 }
 
-var bar = obj.foo
+let bar = obj.foo
 bar() // window
 
+```
 
-// 案例四：
+案例四：
+
+全局函数赋值给对象的方法
+
+```js:no-line-numbers
 function foo() {
   console.log(this)
 }
-var obj = {
-  name: "nevermore",
-  foo: foo
+let obj = {
+  name: 'obj',
+  objFoo: foo,
 }
 
-var bar = obj.foo
+obj.objFoo()
+let bar = obj.objFoo // {name: 'obj', objFoo: ƒ}
 bar() // window
+```
 
-// 案例五：
+案例五：
+
+高阶函数
+
+```js:no-line-numbers
 function foo() {
   function bar() {
     console.log(this)
@@ -70,30 +94,33 @@ function foo() {
   return bar
 }
 
-var fn = foo()
+let fn = foo()
 fn() // window
+```
 
-// 案例六：
-function foo(func){
+案例六：
+
+```js:no-line-numbers
+function foo(func) {
   func()
 }
-var obj = {
-  name: "nevermore",
-  bar: function(){
+let obj = {
+  name: 'obj',
+  bar: function () {
     console.log(this)
-  }
+  },
 }
 foo(obj.bar) // window
 ```
 
-## 2.隐式绑定
+## 隐式绑定
 
-作为对象的方法被调用
+作为**字面量对象**的方法，隐式地被对象调用
 
 案例一：
 
 ```js:no-line-numbers
-var obj = {
+let obj = {
   name: 'obj',
   foo: function() {
     console.log(this)
@@ -105,16 +132,16 @@ obj.foo() // {name: 'obj', foo: ƒ}
 案例二：
 
 ```js:no-line-numbers
-var obj1 = {
-  name: "obj1",
-  foo: function() {
+let obj1 = {
+  name: 'obj1',
+  foo: function () {
     console.log(this)
-  }
+  },
 }
 
-var obj2 = {
-  name: "obj2",
-  bar: obj1.foo
+let obj2 = {
+  name: 'obj2',
+  bar: obj1.foo,
 }
 
 obj1.foo() // {name: 'obj1', foo: ƒ}
@@ -122,40 +149,39 @@ obj2.bar() // {name: 'obj2', bar: ƒ}
 
 // bar 只是保存了 obj1.foo 函数的地址
 // obj2 调用了这个地址上的函数
-// 另见 规则之外：间接函数引用
+// 另见 特殊规则：间接函数引用
 ```
 
 案例三：
 
 ```js:no-line-numbers
-var obj = {
+let obj = {
   foo: function(){
     console.log(this)
   }
 }
 
-var bar = obj.foo // bar 保存 obj.foo 函数的地址
-obj.foo() // 转换为 obj.foo.call(obj)，this 就是 obj
+let bar = obj.foo // bar 保存 obj.foo 函数的地址
+obj.foo() // obj 隐式调用
 bar() // window 独立函数调用
-
 ```
 
 案例四：（刁钻）
 
+JS 中数组也是对象，this 指向字面量数组
+
 ```js:no-line-numbers
 let arr = [0, function(){console.log(this)}, 2]
 arr[1]() // [0, ƒ, 2] 即 arr
-// 可假想为 arr.1() => arr.1.call(arr)
 ```
 
-## 3.显式绑定
+## 显式绑定
 
-bind、call、apply 显式绑定调用者
+使用 bind、call、apply 显式地指定被哪个调用者调用：
 
-> 三个都是显式地指定函数的调用者。
-bind 绑定 this，返回一个函数，但不执行函数。
-call 绑定 this 并立即执行函数，参数为一个个值。
-apply 绑定 this 并立即执行函数，参数为参数列表伪数组。
+- bind 绑定 this，返回一个函数，但不执行函数
+- call 绑定 this 并立即执行函数，参数为一个个值
+- apply 绑定 this 并立即执行函数，参数为参数列表伪数组
 
 ```js:no-line-numbers
 function foo() {
@@ -197,45 +223,62 @@ obj.add.call(obj, 2, 2) // 4 {name: 'obj', add: ƒ}
 obj.add.apply(obj, [3, 3]) // 6 {name: 'obj', add: ƒ}
 ```
 
-## 4.new 绑定
+## new 绑定
 
-作为类的方法被调用
+作为类创建的实例对象方法被调用
 
-指向 new 创建的实例对象
+:::warning
+
+类创建的实例对象方法与类方法不同
+
+- 实例对象方法通过 `this.foo` 定义
+- 类方法通过 `static` 关键字定义
+
+实例对象与字面量对象不同：
+
+- 字面量对象是可以直接定义，对象的内容就是字面上的代码
+- 实例对象是通过类创建而来的，对象的内容由构造函数构造
+:::
+
+注意：类创建的实例对象方法与类方法不同，类方法使用 static 关键字创建
 
 ```js:no-line-numbers
 // ES5
-function Person(name) {
+function Person1(name) {
+  // 实例特有属性、方法通过 this. 放在实例上
   this.name = name
-  this.fn = function () {
+  this.foo = function () {
     console.log(this)
   }
 }
-var person = new Person('nevermore')
-person.fn() // Person {name: 'nevermore', fn: ƒ}
+// 公有属性、方法放在原型上
+Person1.prototype.bar = function () {
+  console.log(this)
+}
+let p1 = new Person1('p1')
+p1.foo() // Person1 {name: 'p1', foo: ƒ}
+p1.bar() // Person1 {name: 'p1', foo: ƒ}
+Person1.prototype.bar() // {bar: ƒ, constructor: ƒ}
 
 // ES6
-class Person {
-  constructor(name){
+class Person2 {
+  // 实例特有属性、方法放在 constructor 中
+  constructor(name) {
     this.name = name
   }
-  fn(){
+  // 公有属性、方法放在 constructor 外
+  foo() {
+    console.log(this)
+  }
+  // 类方法可以不用实例化就可以调用
+  static bar() {
     console.log(this)
   }
 }
-const person = new Person('nevermore')
-person.fn() // Person {name: 'nevermore'} 没有 fn
-
-// 使用 new 调用对象的方法
-var obj = {
-  name: 'obj',
-  fn: function () {
-    console.log(this)
-  },
-}
-
-// new 绑定的优先级高于隐式绑定
-var f = new obj.fn() // fn {}
+let p2 = new Person2('p2')
+p2.foo() // Person2 {name: 'p2'} 注意：没有 foo
+// p2.bar() 实例不能调用类方法
+Person2.bar()
 ```
 
 使用new关键字来调用函数是，会执行如下的操作：
@@ -266,7 +309,7 @@ function Person(name) {
 }
 ```
 
-## 5.箭头函数
+## 箭头函数
 
 [详解箭头函数和普通函数的区别以及箭头函数的注意事项、不适用场景](https://juejin.cn/post/6844903801799835655#heading-13)
 
@@ -279,32 +322,41 @@ let a = () =>{};
 console.log(a.prototype); // undefined
 ```
 
-2.如果箭头函数被非箭头函数包含，this 指向 **定义时所在的** 最近一层**非箭头函数**（即上层作用域），与调用位置无关。如果箭头函数外层没有普通函数（即上层作用域为全局），严格模式和非严格模式下它的 this 都会指向 `window`
+2.如果箭头函数被非箭头函数包含，this 指向 **定义时所在的** 最近一层**非箭头函数**（即上层作用域）的 this 值，与调用位置无关。
+
+如果箭头函数外层没有普通函数（即上层作用域为全局），严格模式和非严格模式下它的 this 都会指向 `window`（浏览器环境）
+
+箭头函数的函数体是一层作用域，它的上层作用域即箭头函数定义所在的作用域
 
 ```js:no-line-numbers
-let a // 声明全局变量 a
+let a // 声明全局变量 a 用于存放箭头函数的地址
 
 let obj1 = { name: 'obj1' }
-fn1.call(obj1)
+// obj1 调用 foo1，foo1 中将箭头函数赋值给 a
+foo1.call(obj1)
 
 let obj2 = { name: 'obj2' }
-fn2.call(obj2)
+// obj2 调用 foo2，foo2 中调用全局变量 a 所指向的箭头函数
+foo2.call(obj2)
 
-function fn1() {
+function foo1() {
+  // 箭头函数 this 指向函数定义时所在的最近一层非箭头函数的 this 值
+  // 又通过 call 显式指定 foo1 调用者，所以 foo1 this 值指向 obj1
   a = () => {
-    console.log(this.name) // 'obj1'
-  } // 在 fn1 中将箭头函数赋值给 a
+    console.log(this.name) // obj1
+  }
 }
 
-function fn2() {
-  a() // 在 fn2 中 调用全局变量 a 所指向的箭头函数 
+function foo2() {
+  // 箭头函数 this 指向与调用位置无关
+  a()
 }
 ```
 
-上面说到，**this 值只有在函数执行时才能确定调用者，而不是在函数定义时确定**，箭头函数就是要打破这一规则，方便开发，比如在 setTimeout 中使用箭头函数：
+**普通函数的 this 值只有在函数执行时才能确定调用者，而不是在函数定义时确定**，箭头函数就是要打破这一规则，方便开发，比如在 setTimeout 中使用箭头函数：
 
 ```js:no-line-numbers
-const name = 'window' // 挂载到 window 上
+var name = 'window' // 挂载到 window 上
 
 // 默认绑定
 const obj1 = {
@@ -332,6 +384,12 @@ obj2.delay() // 'obj2'
 const fn = () => console.log(this.name)
 fn() // 'window'
 ```
+
+::: warning
+块语句，如 `if(){}`、字面量对象 `let obj = {}` 等不会产生作用域
+
+作用域有：全局、函数、块、eval 作用域
+:::
 
 3.没有 `arguments`，可以使用 `rest参数…` 获取参数列表
 
@@ -371,64 +429,16 @@ fn1(1, 2)
 fn2(1, 2)
 ```
 
-## 内置函数的this
+## 规则优先级
 
-1. setTimeout
-
-相当于独立函数调用
-
-```js:no-line-numbers
-setTimeout(function () {
-  console.log(this) // window
-}, 0)
-```
-
-2. 监听点击
-
-目标元素
-
-```js:no-line-numbers
-const boxDiv = document.querySelector('.box')
-boxDiv.onclick = function () {
-  console.log(this) // <div class="box"></div>
-}
-
-boxDiv.addEventListener('click', function () {
-  console.log(this) // <div class="box"></div>
-})
-```
-
-3. 数组的方法forEach、map、filter
-
-可以自己指定
-
-![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220402021324.png)
-
-```js:no-line-numbers
-var nums = [1, 2, 3]
-var obj = { name: 'obj' }
-
-nums.forEach(function (item) {
-  console.log(item, this)
-}, obj)
-// 1 {name: 'obj'}
-// 2 {name: 'obj'}
-// 3 {name: 'obj'}
-
-nums.map(function (item) {
-  console.log(item, this)
-}, obj)
-// 1 {name: 'obj'}
-// 2 {name: 'obj'}
-// 3 {name: 'obj'}
-```
+### 1.显式绑定高于隐式绑定
 
 ```js:no-line-numbers
 function foo() {
   console.log(this)
 }
 
-var obj = {
+let obj = {
   name: 'obj',
   foo: foo.bind('aa')
 }
@@ -436,35 +446,34 @@ var obj = {
 obj.foo() // String {'aa'}
 ```
 
-2.new 绑定高于隐式绑定
+### 2.new 绑定高于隐式绑定
 
 ```js:no-line-numbers
-var obj = {
-  name: 'obj',
+let obj = {
   foo: function () {
     console.log(this)
   }
 }
 
-var f = new obj.foo() // foo {}
+let foo1 = new obj.foo() // foo {}
 ```
 
-3.new 绑定高于显式绑定
+### 3.new 绑定高于 bind 绑定
+
+new 不能与 apply/call 一起使用，只能与 bind 同时使用
 
 ```js:no-line-numbers
-// 结论: new 不能和 apply/call 一起使用
-
 // new 的优先级高于 bind
 function foo() {
   console.log(this)
 }
 
-var bar = foo.bind('aa')
+let bar = foo.bind('aa')
 
-var obj = new bar() // foo {}
+let obj = new bar() // foo {}
 ```
 
-4.bind 高于 call
+### 4.bind 高于 call
 
 有点反常理，理应后面覆盖前面。
 
@@ -481,9 +490,55 @@ foo.bind('aa').call('bb') // String {'aa'}
 
 ## 特殊规则
 
-1.忽略显式绑定
+### 1.内置函数的this
 
-apply、call、bind: 当传入null/undefined 时，自动将  this  绑定成全局对象 window
+setTimeout，相当于独立函数调用，this 指向全局对象：
+
+```js:no-line-numbers
+setTimeout(function () {
+  console.log(this) // window
+}, 0)
+```
+
+监听点击，this 指向目标 DOM 元素
+
+```js:no-line-numbers
+const boxDiv = document.querySelector('.box')
+boxDiv.onclick = function () {
+  console.log(this) // <div class="box"></div>
+}
+
+boxDiv.addEventListener('click', function () {
+  console.log(this) // <div class="box"></div>
+})
+```
+
+数组的方法forEach、map、filter，可以自己指定 this 指向：
+
+![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220402021324.png)
+
+```js:no-line-numbers
+let nums = [1, 2, 3]
+let obj = { name: 'obj' }
+
+nums.forEach(function (item) {
+  console.log(item, this)
+}, obj)
+// 1 {name: 'obj'}
+// 2 {name: 'obj'}
+// 3 {name: 'obj'}
+
+nums.map(function (item) {
+  console.log(item, this)
+}, obj)
+// 1 {name: 'obj'}
+// 2 {name: 'obj'}
+// 3 {name: 'obj'}
+```
+
+### 2.显式绑定 null/undefined
+
+给 bind、call、apply 传入 `null/undefined` 时，自动将 `this` 绑定成全局对象 `window`
 
 ```js:no-line-numbers
 function foo() {
@@ -494,9 +549,6 @@ foo.apply('a') // String {'a'}
 // 以下均输出 window
 foo.bind(null)()
 foo.bind(undefined)()
-// 上面一行等价于下面两行
-var temp = foo.bind(undefined)
-temp()
 
 foo.call(null)
 foo.call(undefined)
@@ -505,24 +557,26 @@ foo.apply(null)
 foo.apply(undefined)
 ```
 
-2.间接函数引用
+### 3.间接函数引用
 
 ```js:no-line-numbers
-var obj1 = {
+var name = 'window' // 挂载到 window 上
+
+let obj1 = {
   name: 'obj1',
   foo: function () {
-    console.log(this)
+    console.log(this.name)
   },
 }
 
-var obj2 = {
+let obj2 = {
   name: 'obj2',
 }
 
-obj1.foo() // {name: 'obj1', foo: ƒ}
+obj1.foo() // obj1
 
-obj2.bar = obj1.foo
-obj2.bar() // {name: 'obj2', bar: ƒ}
+obj2.bar = obj1.foo // 将函数地址赋值给 obj2.bar，再调用这个地址上的函数，字面量对象的方法指向该对象
+obj2.bar() // obj2
 
 ;(obj2.bar = obj1.foo)() // window
 // 赋值表达式 (obj2.foo = obj1.foo) 的结果是 obj1 的 foo 函数
@@ -531,52 +585,23 @@ obj2.bar() // {name: 'obj2', bar: ƒ}
 
 ## 面试题
 
-this 即当前函数所在的作用域？
-
-区分：代码块与对象字面量。代码块有块级作用域，对象无作用域。
-
-```js:no-line-numbers
-{
-  
-}
-let obj1 = {}
-
-let obj2 = {
-  name: 'obj2',
-  foo: function () {
-    console.log(this) // {name: 'obj2', foo: ƒ}
-    // foo 所在的作用域是 obj2
-    // foo 上层作用域是全局
-  },
-}
-obj2.foo()
-
-function Person() {
-  this.foo = function() {
-    console.log(this) // Person {foo: ƒ}
-  }
-}
-let person1 = new Person()
-person1.foo()
-```
-
 ### 面试题一
 
 ```js:no-line-numbers
-var name = 'window'
+var name = 'window' // 挂载到 window 上
 
-var person = {
+let person = {
   name: 'person',
   sayName: function () {
     console.log(this.name)
-  }
+  },
 }
 
 function sayName() {
-  var foo = person.sayName
+  let foo = person.sayName
   foo() // window: 独立函数调用
   person.sayName() // person: 隐式调用
-  (person.sayName)() // person: 隐式调用
+  ;(person.sayName)() // 等价于上行：person: 隐式调用
   ;(b = person.sayName)() // window: 赋值表达式(独立函数调用)
 }
 
@@ -585,16 +610,19 @@ sayName()
 
 ### 面试题二
 
-通过对象字面量创建对象，字面量是一种语法糖。
+此题通过字面量定义字面量对象，有四个函数：
 
-对象没有作用域
+- foo1：普通函数
+- foo2：箭头函数
+- foo3：返回普通函数的普通函数
+- foo4：返回箭头函数的普通函数
 
-作用域链：全局→
+此题作用域链：全局 → foo1~4 函数 → foo3、foo4 返回的函数
 
 ```js:no-line-numbers
-var name = 'window'
+var name = 'window' // 挂载到 window 上
 
-var person1 = {
+let person1 = {
   // this {name: 'person1', foo1: ƒ, foo2: ƒ, foo3: ƒ, foo4: ƒ}
   name: 'person1',
   foo1: function () {
@@ -614,7 +642,7 @@ var person1 = {
   },
 }
 
-var person2 = { name: 'person2' }
+let person2 = { name: 'person2' }
 
 person1.foo1() // person1：隐式绑定
 person1.foo1.call(person2) // person2：显示绑定优先级大于隐式绑定
@@ -626,23 +654,24 @@ person1.foo3()() // window：foo3()得到普通函数，再独立函数调用
 person1.foo3.call(person2)() // window：foo3 绑定 person2 并执行得到普通函数，再独立函数调用
 person1.foo3().call(person2) // person2：foo3()得到普通函数，再显式绑定
 
-person1.foo4()() // person1：箭头函数 this 指向上层作用域 person1
-person1.foo4.call(person2)() // person2：foo4 绑定 person2 并执行得到箭头函数，上层作用域为 person2
+person1.foo4()() // person1：普通函数返回的箭头函数被字面量对象 person1 隐式绑定调用
+person1.foo4.call(person2)() // person2：foo4 绑定 person2 并执行得到箭头函数
 person1.foo4().call(person2) // person1：foo4()得到箭头函数无法通过 call 更改 this
 ```
 
 ### 面试题三
 
-通过构造函数创建对象
+此题通过构造函数创建实例对象，有四个子函数，同面试题二
 
-函数有作用域
+此题作用域链：全局 → Person 构造函数 → foo1~4 函数 → foo3、foo4 返回的函数
+
+构造函数的 this 指向创建的实例对象
+foo1~4 类的方法
 
 相比于面试题二，只有 `person1.foo2()` 、`person1.foo2.call(person2)` 输出不同
 
-作用域链：全局→Person（foo1~4所在）
-
 ```js:no-line-numbers
-var name = 'window'
+var name = 'window' // 挂载到 window 上
 
 function Person (name) {
   console.log(this) // Person {}
@@ -664,8 +693,8 @@ function Person (name) {
   }
 }
 
-var person1 = new Person('person1')
-var person2 = new Person('person2')
+let person1 = new Person('person1')
+let person2 = new Person('person2')
 
 person1.foo1() // person1：隐式绑定
 person1.foo1.call(person2) // person2：显示绑定优先级大于隐式绑定
@@ -677,20 +706,17 @@ person1.foo3()() // window：foo3()得到普通函数，再独立函数调用
 person1.foo3.call(person2)() // window：foo3 绑定 person2 并执行得到普通函数，再独立函数调用
 person1.foo3().call(person2) // person2：foo3()得到普通函数，再显式绑定
 
-person1.foo4()() // person1：箭头函数 this 指向上层作用域 person1
-person1.foo4.call(person2)() // person2：foo4 绑定 person2 并执行得到箭头函数，上层作用域为 person2
+person1.foo4()() // person1：普通函数返回的箭头函数被 person1 调用
+person1.foo4.call(person2)() // person2：foo4 绑定 person2 并执行得到箭头函数
 person1.foo4().call(person2) // person1：foo4()得到箭头函数无法通过 call 更改 this
-
 ```
 
 ### 面试题四
 
-相较于面试题三，
-
-作用域链：全局→Person→obj（foo1、foo2所在）→foo1、foo2返回函数
+此题作用域链：全局 → Person → obj（foo1、foo2所在）→ foo1、foo2返回函数
 
 ```js:no-line-numbers
-var name = 'window'
+var name = 'window' // 挂载到 window 上
 
 function Person(name) {
   console.log(this) // Person{}
@@ -711,8 +737,8 @@ function Person(name) {
   }
 }
 
-var person1 = new Person('person1')
-var person2 = new Person('person2')
+let person1 = new Person('person1')
+let person2 = new Person('person2')
 
 person1.obj.foo1()() // window：foo1()得到普通函数，再独立函数调用
 person1.obj.foo1.call(person2)() // window：foo1 绑定 person2 并执行得到普通函数，再独立函数调用
