@@ -318,8 +318,8 @@ function Person(name) {
 1.没有`prototype`(原型)，所以箭头函数本身没有 `this`、`super`
 
 ```js:no-line-numbers
-let a = () =>{};
-console.log(a.prototype); // undefined
+let arrow = () =>{}
+console.log(arrow.prototype) // undefined
 ```
 
 2.如果箭头函数被非箭头函数包含，this 指向 **定义时所在的** 最近一层**非箭头函数**（即上层作用域）的 this 值，与调用位置无关。
