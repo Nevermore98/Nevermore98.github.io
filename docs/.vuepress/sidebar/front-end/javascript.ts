@@ -10,9 +10,10 @@ export const javascript = arraySidebar([
   'with-eval-strict',
   'OOP',
   'prototype',
+  'promise-implement',
+  'extend',
   'promise',
   'async-await',
   'iterator-generator',
-  'promise-implement',
   'eventLoop'
 ])
