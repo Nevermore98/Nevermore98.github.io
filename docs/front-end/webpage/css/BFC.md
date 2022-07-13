@@ -34,7 +34,7 @@
 
 设置父元素 `class = "clearfix"` 并添加样式 `.clearfix::after` 如下：
 
-```css
+```css:no-line-numbers
 .clearfix::after {
   content: '';
   display: block;

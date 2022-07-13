@@ -110,7 +110,8 @@
 
 清除 table 默认样式
 
-```css
+```css:no-line-numbers
+
 table {
  border-collapse: collapse;
  border-spacing: 0;
