@@ -5,12 +5,12 @@ export const webpage = arraySidebar([
     text: 'HTML',
     collapsable: false,
     prefix: 'html/',
-    children: ['intro', 'tag', 'html5'],
+    children: ['intro', 'tag', 'html5']
   },
   {
     text: 'CSS',
     collapsable: false,
     prefix: 'css/',
-    children: ['intro', 'box', 'flex', 'align-center', 'responsive'],
-  },
+    children: ['intro', 'box', 'flex', 'BFC', 'align-center', 'responsive']
+  }
 ])
