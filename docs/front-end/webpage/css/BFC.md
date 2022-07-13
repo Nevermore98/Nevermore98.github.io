@@ -23,10 +23,30 @@
 
 常用上述第 2、3、4 方式创建 BFC：
 
-1. 解决外边距重叠（在兄弟元素外分别**包裹 BFC 容器**）[demo](http://js.jirengu.com/tofavapuko/1/edit?html,css,output)
+1. 解决外边距重叠（在兄弟元素外分别**包裹 BFC 容器**）[在线示例](http://js.jirengu.com/tofavapuko/1/edit?html,css,output)
 
-2. 解决父容器高度塌陷（子元素设置浮动，脱离文档流致使父元素高度塌陷），可以使用清除浮动技巧依据计算 BFC 的高度时，浮动元素也参与计算。故**使父元素成为 BFC 容器**）[demo](http://js.jirengu.com/taguvarupa/1/edit?html,css,output)
-3. 实现自适应两列布局，左侧元素浮动覆盖右侧元素，使右侧元素成为 BFC 容器）[demo](http://js.jirengu.com/taguvarupa/2/edit?html,css,output)
+2. 解决父容器高度塌陷（子元素设置浮动，脱离文档流致使父元素高度塌陷），可以使用清除浮动技巧依据计算 BFC 的高度时，浮动元素也参与计算。故**使父元素成为 BFC 容器**）[在线示例](http://js.jirengu.com/taguvarupa/1/edit?html,css,output)
+3. 实现自适应两列布局，左侧元素浮动覆盖右侧元素，使右侧元素成为 BFC 容器）[在线示例](http://js.jirengu.com/taguvarupa/2/edit?html,css,output)
+
+## 清除浮动
+
+清除浮动常用代码：使用伪元素 `::after`**（给末尾添加一个看不见的块元素来清除浮动）**
+
+设置父元素 `class = "clearfix"` 并添加样式 `.clearfix::after` 如下：
+
+```css
+.clearfix::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+```
+
+[在线示例](http://js.jirengu.com/bucumaxohe/1/edit?html,css,output)
+
+`:before` 和 `:after` 伪元素是在 CSS2 中提出来的，所以兼容性较好。
+
+`::before` 和 `::after` 是 CSS3 中的写法，为了将伪类和伪元素区分开。但是平时为了兼容性，还是会用一个冒号的写法。
 
 ## 参考资料
 
