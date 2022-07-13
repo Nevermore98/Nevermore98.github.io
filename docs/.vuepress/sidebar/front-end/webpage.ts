@@ -11,6 +11,14 @@ export const webpage = arraySidebar([
     text: 'CSS',
     collapsable: false,
     prefix: 'css/',
-    children: ['intro', 'box', 'flex', 'BFC', 'align-center', 'responsive']
+    children: [
+      'intro',
+      'box',
+      'flex',
+      'BFC',
+      'css-priority',
+      'align-center',
+      'responsive'
+    ]
   }
 ])
