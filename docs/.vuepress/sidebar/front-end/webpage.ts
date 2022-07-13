@@ -18,6 +18,7 @@ export const webpage = arraySidebar([
       'BFC',
       'css-priority',
       'align-center',
+      'css-triangle',
       'responsive'
     ]
   }
