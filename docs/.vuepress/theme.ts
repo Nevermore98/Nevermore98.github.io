@@ -35,8 +35,8 @@ export default hopeTheme({
 
   encrypt: {
     config: {
-      '/guide/encrypt.html': ['1234'],
-    },
+      '/guide/encrypt.html': ['1234']
+    }
   },
 
   blog: {
@@ -49,18 +49,18 @@ export default hopeTheme({
     medias: {
       Gmail: 'mailto:nevermorey98@gmail.com',
       GitHub: 'https://github.com/Nevermore98',
-      Gitee: 'https://gitee.com/Nevermore98',
+      Gitee: 'https://gitee.com/Nevermore98'
     },
-    sidebarDisplay: 'none',
+    sidebarDisplay: 'none'
   },
 
   plugins: {
     mdEnhance: {
-      enableAll: true,
+      // enableAll: true,
       presentation: {
-        plugins: ['highlight', 'math', 'search', 'notes', 'zoom'],
-      },
+        plugins: ['highlight', 'math', 'search', 'notes', 'zoom']
+      }
     },
-    blog: true,
-  },
+    blog: true
+  }
 })
