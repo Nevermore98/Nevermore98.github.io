@@ -40,9 +40,9 @@ export default defineUserConfig({
 
   plugins: [
     docsearchPlugin({
-      // appId: 'R2IYF7ETH7',
-      // apiKey: '599cec31baffa4868cae4e79f180729b',
-      // indexName: 'docsearch',
+      appId: 'OQADALZ7IQ',
+      apiKey: 'ce865f8fe2652c9a454dc39708fe1fe3',
+      indexName: 'monkee',
 
       locales: {
         '/': {
