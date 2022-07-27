@@ -6,6 +6,7 @@ export const javascript = arraySidebar([
   'executing-process',
   'closure',
   'this',
+  'deepClone',
   'functional-programming',
   'with-eval-strict',
   'OOP',
