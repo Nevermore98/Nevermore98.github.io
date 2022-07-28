@@ -2,9 +2,172 @@
   title: 实现 Promise 
 ---
 
-## resolve 与 reject
+## A+ Promise 最终实现
 
-### 1. 初步实现
+```js:no-line-numbers
+class MyPromise {
+  static PENDING = 'pending'
+  static FULFILLED = 'fulfilled'
+  static REJECTED = 'rejected'
+
+  constructor(executor) {
+    this.PromiseState = MyPromise.PENDING
+    this.PromiseResult = undefined
+    // 等待状态时保存成功回调和失败回调数组
+    this.onFulfilledCallbacks = []
+    this.onRejectedCallbacks = []
+    // 在 constructor 中使用箭头函数，不会出现 this 指向错误问题
+    const resolve = (result) => {
+      // 判断是否处于等待状态，是则改变状态（注意 queueMicrotask 包裹 if，否则状态不能锁定）
+      queueMicrotask(() => {
+        if (this.PromiseState === MyPromise.PENDING) {
+          this.PromiseState = MyPromise.FULFILLED
+          this.PromiseResult = result
+          // 遍历成功回调数组，执行回调
+          this.onFulfilledCallbacks.forEach((callback) => {
+            callback(result)
+          })
+        }
+      })
+    }
+    const reject = (reason) => {
+      // 判断是否处于等待状态，是则改变状态（注意 queueMicrotask 包裹 if，否则状态不能锁定）
+      queueMicrotask(() => {
+        if (this.PromiseState === MyPromise.PENDING) {
+          this.PromiseState = MyPromise.REJECTED
+          this.PromiseResult = reason
+          // 遍历失败回调数组，执行回调
+          this.onRejectedCallbacks.forEach((callback) => {
+            callback(reason)
+          })
+        }
+      })
+    }
+    // 抛出异常相当于执行 reject
+    try {
+      // 传入 executor 函数后立即执行（注意这里不用加 this.）
+      executor(resolve, reject)
+    } catch (err) {
+      reject(err)
+    }
+  }
+  // 实现 then 方法
+  then(onFulfilled, onRejected) {
+    // 参数校验：对于成功回调是函数则执行，不是则接收传入值作为输出值，对于失败回调是函数则执行，不是则抛出传入值作为错误
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : (val) => val
+    onRejected =
+      typeof onRejected === 'function'
+        ? onRejected
+        : (reason) => {
+            throw reason
+          }
+    // 创建一个新的 Promise 对象，最后返回
+    let promise2 = new MyPromise((resolve, reject) => {
+      // 成功状态、失败状态分别执行 then 的第一个、第二个回调
+      if (this.PromiseState === MyPromise.FULFILLED) {
+        queueMicrotask(() => {
+          try {
+            let x = onFulfilled(this.PromiseResult)
+            resolvePromise(promise2, x, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
+      }
+      if (this.PromiseState === MyPromise.REJECTED) {
+        queueMicrotask(() => {
+          try {
+            let x = onRejected(this.PromiseResult)
+            resolvePromise(promise2, x, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
+      }
+      if (this.PromiseState === MyPromise.PENDING) {
+        this.onFulfilledCallbacks.push(() => {
+          try {
+            let x = onFulfilled(this.PromiseResult)
+            resolvePromise(promise2, x, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
+        this.onRejectedCallbacks.push(() => {
+          try {
+            let x = onRejected(this.PromiseResult)
+            resolvePromise(promise2, x, resolve, reject)
+          } catch (err) {
+            reject(err)
+          }
+        })
+      }
+    })
+    return promise2
+  }
+}
+/**
+ * 对resolve()、reject() 进行增强
+ * @param  {promise} promise2 promise1.then 方法返回的新的 Promise 对象
+ * @param  {[type]} x         promise1 的结果值
+ * @param  {[type]} resolve   promise2 的 resolve 方法
+ * @param  {[type]} reject    promise2 的 reject 方法
+ */
+function resolvePromise(promise2, x, resolve, reject) {
+  // 情况1：自身引用
+  if (x === promise2) {
+    reject(new TypeError('循环引用'))
+  }
+  // 情况2：MyPromise 对象
+  if (x instanceof MyPromise) {
+    x.then(
+      (y) => {
+        resolvePromise(promise2, y, resolve, reject)
+      },
+      (r) => reject(r)
+    )
+  }
+  // 情况3：对象或函数（需排除 typeof null === 'object' 干扰）
+  else if (x !== null && (typeof x === 'object' || typeof x === 'function')) {
+    let called = false
+    try {
+      // 如果 then 是函数，则 x 是 thenable 对象
+      // 如果 then 不是函数，则 x 是非 thenable 对象 或 函数
+      let then = x.then
+      if (typeof then === 'function') {
+        then.call(
+          x,
+          (y) => {
+            // 方法不能重复调用
+            if (called) return
+            called = true
+            resolvePromise(promise2, y, resolve, reject)
+          },
+          (r) => {
+            if (called) return
+            called = true
+            reject(r)
+          }
+        )
+      } else {
+        resolve(x) // 非 thenable 对象 或 函数，则直接 resolve
+      }
+    } catch (e) {
+      if (called) return
+      called = true
+      reject(e)
+    }
+  } else {
+    resolve(x) // 不是对象或函数，即值类型，则直接 resolve
+  }
+}
+```
+
+## A+ Promise 实现过程
+
+### resolve 与 reject
+
+#### 1. 初步实现
 
 三种状态、this 指向、传入立即执行
 
@@ -44,7 +207,7 @@ console.log(p2)
 // MyPromise {PromiseState: 'rejected', PromiseResult: '失败'}
 ```
 
-### 2. 状态不可变
+#### 2. 状态不可变
 
 Promise 状态只以首先 `resolve` 或 `reject` 的为准，后续状态不可变
 
@@ -87,7 +250,7 @@ console.log(p)
 // MyPromise {PromiseState: 'fulfilled', PromiseResult: '成功'}
 ```
 
-### 3. 抛出异常
+#### 3. 抛出异常
 
 Promise 中抛出异常相当于执行 `reject`
 
@@ -133,9 +296,9 @@ console.log(p)
 // MyPromise {PromiseState: 'rejected', PromiseResult: Error: 失败}
 ```
 
-## then 方法
+### then 方法
 
-### 1. 初步实现
+#### 1. 初步实现
 
 then 接收两个回调函数作为参数，一个是成功回调，另一个是失败回调。当Promise状态为`fulfilled` 执行成功回调，为`rejected` 执行失败回调
 
@@ -201,7 +364,7 @@ new MyPromise((resolve, reject) => {
 // 成功
 ```
 
-### 2. then 是异步（微任务）
+#### 2. then 是异步（微任务）
 
 异步任务分为微任务与宏任务
 
@@ -271,7 +434,7 @@ class MyPromise {
 }
 ```
 
-### 3. 定时器
+#### 3. 定时器
 
 因为 JS 执行机制是先微后宏，`then` 先于 `setTimeout`，在定时器到时之前状态仍为等待状态，所以遇到等待状态时，将成功和失败回调保存到数组里，等定时器到时之后再遍历执行数组里的函数。
 
@@ -398,7 +561,7 @@ console.log(3)
 // 1秒后打印： 4 成功
 ```
 
-### 4. 链式调用
+#### 4. 链式调用
 
 `then` 返回新的 Promise 对象。通过函数 resolvePromise 增强 `resolve`、`reject`
 
@@ -1071,7 +1234,7 @@ MyPromise.any([p2, p3]).catch((err) => {
 
 完整代码存放于 [Github仓库](https://github.com/Nevermore98/MyPromise)
 
-## 参考
+## 参考资料
 
 - [看了就会，手写Promise原理，最通俗易懂的版本！！！](https://juejin.cn/post/6994594642280857630)
 - [手把手一行一行代码教你“手写Promise“，完美通过 Promises/A+ 官方872个测试用例](https://juejin.cn/post/7043758954496655397)
