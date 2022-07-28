@@ -21,5 +21,11 @@ export const webpage = arraySidebar([
       'css-triangle',
       'responsive'
     ]
+  },
+  {
+    text: '浏览器',
+    collapsable: false,
+    prefix: 'browser/',
+    children: ['browser-render']
   }
 ])
