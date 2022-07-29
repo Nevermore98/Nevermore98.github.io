@@ -24,6 +24,14 @@
 - `<style>` 放在 `<head>`  里：避免页面结构渲染完成，而样式还没开始渲染。
 - `<script>` 放在 `<body>` 的最后：优先渲染页面，避免执行 JS 代码时暂停渲染。
 
+### script 标签中的 defer 和 async
+
+`<script>`：阻断 `HTML` 解析，只有下载好并执行完脚本才会继续解析 `HTML`。
+`<script async>`：解析 `HTML` 过程中，异步下载脚本，下载成功立马执行，会阻断 `HTML` 的解析。
+`<script defer>`：完全不会阻断 `HTML` 的解析，解析完成后再执行脚本。
+
+![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220728232104.png)
+
 ## SPA、CSR 与 SSR
 
 SPA（Single Page Application）单页面应用程序，是前后端分离时提出的一种解决方案。在一个应用中，只有一个完整的HTML页面，页面中有一个根节点容器。由 JS 代码把需要加载的 DOM 片段插入到该容器中。  
