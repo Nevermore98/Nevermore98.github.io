@@ -120,6 +120,13 @@ li {
 
 // 代码
 code {
-  font-size: 0.87em ;
+  font-size: 0.87em;
   padding: 0.065em 0.4em;
+}
+
+// 侧边栏 heading
+.sidebar-heading {
+  padding-left: 0.8rem !important;
+  font-size: 1.2rem !important;
+  font-weight: 500;
 }
