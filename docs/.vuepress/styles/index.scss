@@ -88,10 +88,15 @@ strong {
   margin: auto;
 }
 
-// 自定义 MarkDown 小图居中
+// 自定义 MarkDown 图片居中
 .small-img {
   display: block;
   width: 200px;
+  margin: auto;
+}
+.medium-img {
+  display: block;
+  width: 500px;
   margin: auto;
 }
 
