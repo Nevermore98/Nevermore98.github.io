@@ -23,6 +23,18 @@ export const webpage = arraySidebar([
     ]
   },
   {
+    text: '网络',
+    collapsable: false,
+    prefix: 'network/',
+    children: [
+      'http',
+      'http-cache',
+      'tcp',
+      'same-origin-policy',
+      'cookie-session'
+    ]
+  },
+  {
     text: '浏览器',
     collapsable: false,
     prefix: 'browser/',
