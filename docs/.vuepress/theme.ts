@@ -63,6 +63,42 @@ export default hopeTheme({
         plugins: ['highlight', 'math', 'search', 'notes', 'zoom']
       }
     },
-    blog: true
+    blog: true,
+
+    pwa: {
+      update: 'hint',
+      favicon: '/favicon.svg',
+      themeColor: '#46bd87',
+      cacheHTML: false,
+      maxSize: 3072,
+      // apple: false,
+      apple: {
+        icon: '/apple-touch-icon.png',
+        statusBarColor: 'white'
+      },
+      // msTile: false,
+      msTile: {
+        image: '/mstile-144x144.png',
+        color: '#ffffff'
+      },
+      manifest: {
+        name: 'Nevermore阳 的学习笔记',
+        short_name: `Nevermore阳's noteBook`,
+        description: `Nevermore阳's noteBook`,
+        theme_color: '#46bd87',
+        icons: [
+          {
+            src: '/android-chrome-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      }
+    }
   }
 })

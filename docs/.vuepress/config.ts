@@ -43,7 +43,7 @@ export default defineUserConfig({
       appId: 'OQADALZ7IQ',
       apiKey: 'ce865f8fe2652c9a454dc39708fe1fe3',
       indexName: 'monkee',
-      
+
       locales: {
         '/': {
           placeholder: '搜索',
@@ -88,5 +88,7 @@ export default defineUserConfig({
         }
       }
     })
-  ]
+  ],
+  // PWA 相关配置
+  shouldPrefetch: false
 })
