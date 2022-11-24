@@ -1,0 +1,8 @@
+// 修改简历 pdf 浏览器宽高、隐藏按钮
+.pdf-iframe {
+  width: 800px !important;
+  height: 1140px !important;
+}
+.pdf-open-button {
+  display: none !important;
+}

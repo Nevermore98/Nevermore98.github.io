@@ -13,5 +13,6 @@ export default navbar([
       { text: 'Vue', icon: 'vue', link: 'vue' },
       { text: 'React', icon: 'react', link: 'react' }
     ]
-  }
+  },
+  { text: '简历', icon: 'article', link: '/resume/README.md' }
 ])

@@ -35,7 +35,7 @@ export default hopeTheme({
 
   encrypt: {
     config: {
-      '/guide/encrypt.html': ['1234']
+      '/resume': ['9810']
     }
   },
 
@@ -63,6 +63,8 @@ export default hopeTheme({
         plugins: ['highlight', 'math', 'search', 'notes', 'zoom']
       }
     },
+    // 开启 pdf 插件
+    components: ['PDF'],
     blog: true,
 
     pwa: {
