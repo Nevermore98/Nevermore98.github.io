@@ -1,5 +1,5 @@
 ---
-title: JS 运行原理
+title: 浏览器引擎原理
 ---
 
 ## 浏览器内核
@@ -37,15 +37,27 @@ title: JS 运行原理
 - 以前称 Chrome 浏览器使用 Chromium 内核，blink 渲染引擎，V8 JS 引擎。
 - 现在称 Chrome 浏览器使用 blink 内核，V8 JS 引擎。
 
+## 编译型语言与解释型语言
+
+编译型语言与解释型语言：
+
+- 编译型语言：在代码执行前，预编译代码转换成机器语言，每次执行时不用重新编译。编译器生成的目标程序是面向特定平台。
+- 解释型语言：不预编译代码，在执行代码前**先解释**转换成机器语言再执行，每次执行时都需要**先逐行解释再逐行运行**。解释器自己执行源程序，不依赖于某一平台。
+- 解释型语言的执行速度要慢于编译型语言，但跨平台性好。
+
+比如：最初的 C 和 C++ 都是编译型语言，而最初的 JavaScript 是解释型语言。编译器启动速度慢，执行速度快。而解释器的启动速度快，执行速度慢。不过随着即时编译（Just-in-time compilation，JIT)，一种混合使用编译器和解释器的技术的发展，大部分语言都可以即时编译了。
+
+**现在应尽量避免将编程语言划分为编译型或解释型语言。** 详见：[Java 是编译型语言还是解释型语言？](https://www.zhihu.com/question/19608553)
+
+为了提高 JS 的执行效率，浏览器厂商都在不断努力。目前性能最高的 JS 引擎是 V8 引擎，它引入了 Java 虚拟机和 C++ 编译器的众多技术，实现了即时编译，**V8 引擎属于 JIT 编译器**。
+
 ## V8 引擎的原理
 
 > V8 的名字来源于汽车的“V 型 8 缸发动机”（V8 发动机）。V8 发动机主要是美国发展起来，因为马力十足而广为人知。V8 引擎的命名是 Google 向用户展示它是一款强力并且高速的 JavaScript 引擎。
 
-V8 是用 C ++ 编写的 Google 开源高性能 JavaScript 和 WebAssembly 引擎，它用于 Chrome 和 Node.js 等。
+V8 是 Google 用 C++ 编写的开源高性能 JavaScript 和 WebAssembly 引擎，它用于 Chrome 和 Node.js 等。
 
-在运行 C、C++ 以及 Java 等程序之前，需要进行编译，不能直接执行源码。但对于 JavaScript，可以直接执行源码（比如：`node server.js`），它是在运行的时候先编译再执行，这种方式被称为即时编译（Just-in-time compilation，JIT)。混合使用编译器和解释器的技术。而编译器启动速度慢，执行速度快。而解释器的启动速度快，执行速度慢。而 JIT 技术就是博两者之长。V8 引擎属于 JIT 编译器。
-
-`V8` 引擎主要模块有：
+V8 引擎主要模块有：
 
 - **Parser**: 解析器，负责将源代码解析成 `AST` (Abstract Syntax Tree)  抽象语法树
 - **Ignition**: 解释器，负责将 `AST` 抽象语法树转换成字节码并执行，并且会监听、标记热点代码
@@ -60,12 +72,12 @@ V8 是用 C ++ 编写的 Google 开源高性能 JavaScript 和 WebAssembly 引�
 
 图源：极客时间[《图解 Google V8》](https://time.geekbang.org/column/article/211682)
 
-主要流程
+::: tip 主要流程
 
-1. `Parser` 解析器：JS 源代码经过解析器的词法分析（将 JS 代码拆分成一个个词法单元 `token`）和语法分析（将词法单元 `token` 根据语法规则组合成 `AST` 抽象语法树 ），分析过程中如果语法有错，会抛出语法错误。
-2. `Ignition` 解释器：`AST` 通过 `Ignition` 解释器转化为 `btye code` 字节码并执行。在执行过程中，如果发现重复执行多次的代码，则标记为热点代码，将热点代码交给 `TurboFan` 编译器处理。
-（题外话：[Java 字节码](https://zh.wikipedia.org/wiki/Java%E5%AD%97%E8%8A%82%E7%A0%81) 是 Java 虚拟机执行的一种指令格式，V8 引擎本质是 JavaScript 的虚拟机）
-3. `TurboFan` 优化编译器：编译器拿到解释器标记的热点代码后，把它编译为更高效的机器码储存起来，等到下次再执行到这段代码时，就会用现在的机器码替换原来的字节码进行执行，这样大大提升了代码的执行效率。当一段代码不再是热点代码后，进行 `deoptimization` 去优化处理还原成字节码。
+1. `Parser` 解析器：JS 源代码经过解析器的**词法分析**（将 JS 代码拆分成一个个词法单元 `token`）和**语法分析**（将词法单元 `token` 根据语法规则组合成 `AST` 抽象语法树 ），分析过程中如果语法有错，会抛出语法错误。
+2. `Ignition` 解释器：`AST` 通过 `Ignition` 解释器转化为 `byte code` 字节码并执行。在执行过程中，如果发现重复执行多次的代码，则标记为**热点代码**，将热点代码交给 `TurboFan` 编译器处理。
+3. `TurboFan` 优化编译器：编译器拿到解释器标记的热点代码后，把它编译为更高效的**机器码**储存起来，等到下次再执行到这段代码时，就会用现在的机器码替换原来的字节码进行执行，这样大大提升了代码的执行效率。当一段代码不再是热点代码后，进行 `deoptimization` 去优化处理还原成字节码。
+:::
 
 ### Parser 解析器
 
@@ -79,6 +91,65 @@ V8 是用 C ++ 编写的 Google 开源高性能 JavaScript 和 WebAssembly 引�
 2. `Scanner` 扫描器会进行词法分析，词法分析会将代码转换成 `tokens`
 3. 接下来 `tokens` 会被转换成 `AST` 树，经过 `Parser` 解析器和 `PreParser` 预解析器：需要马上执行的 JS 代码进行解析，不需要马上执行的则进行预解析（又称 延迟、惰性解析）。
 4. 生成 `AST` 树后，会被 `Ignition` 解释器转成字节码并执行。
+
+词法分析生成许多个词法单元 `tokens`
+
+```js:no-line-numbers
+let message = 'hi'
+```
+
+Tokens
+
+```js:no-line-numbers
+[
+  {
+    type: 'Keyword',
+    value: 'let'
+  },
+  {
+    type: 'Identifier',
+    value: 'message'
+  },
+  {
+    type: 'Punctuator',
+    value: '='
+  },
+  {
+    type: 'String',
+    value: "'hi'"
+  }
+]
+
+```
+
+AST
+
+```js:no-line-numbers
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "id": {
+            "type": "Identifier",
+            "name": "message"
+          },
+          "init": {
+            "type": "Literal",
+            "value": "hi",
+            "raw": "'hi'"
+          }
+        }
+      ],
+      "kind": "let"
+    }
+  ],
+  "sourceType": "script"
+}
+```
 
 > 并不是所有的 JavaScript 代码，在一开始时就会被执行。那么对所有的 JavaScript 代码进行解析，必然会影响网页的运行效率；
 所以 V8 引擎就实现了 Lazy Parsing（惰性解析）的方案，它的作用是将不必要的函数进行预解析，也就是只解析暂时需要的内容，而对函数的全量解析是在函数被调用时才会进行；

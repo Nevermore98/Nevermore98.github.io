@@ -106,7 +106,7 @@ POST 提交 JSON 数据是复杂请求，POST 提交 form 表单数据是简单�
 - 对于简单请求：服务端在响应头设置
 
 ```http:no-line-numbers
-Access-Control-Allow-Origin: https://server
+Access-Control-Allow-Origin: https://client
 // 或 * 允许所有源访问
 Access-Control-Allow-Origin: * 
 ```
@@ -126,7 +126,7 @@ Access-Control-Allow-Headers: Content-Type
 
 ### 服务器代理
 
-Nginx 反向代理，监听某个域名的，再转发到另一个域名。
+Nginx 反向代理，监听某个域名的请求，再转发到另一个域名。
 
 ## 参考资料
 
