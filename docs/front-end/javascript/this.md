@@ -532,7 +532,7 @@ sayName()
 - foo3：返回普通函数的普通函数
 - foo4：返回箭头函数的普通函数
 
-此题作用域链：全局 → foo1~4 函数 → foo3、foo4 返回的函数
+此题作用域层级：全局 → foo1~4 函数 → foo3、foo4 返回的函数
 
 ```js:no-line-numbers
 var name = 'window' // 挂载到 window 上
@@ -578,7 +578,7 @@ person1.foo4().call(person2) // person1：foo4()得到箭头函数无法通过 c
 
 此题通过构造函数创建实例对象，有四个子函数，同面试题二
 
-此题作用域链：全局 → Person 构造函数 → foo1~4 函数 → foo3、foo4 返回的函数
+此题作用域层级：全局 → Person 构造函数 → foo1~4 函数 → foo3、foo4 返回的函数
 
 构造函数的 this 指向创建的实例对象
 foo1~4 类的方法
@@ -628,7 +628,7 @@ person1.foo4().call(person2) // person1：foo4()得到箭头函数无法通过 c
 
 ### 面试题四
 
-此题作用域链：全局 → Person → obj（foo1、foo2所在）→ foo1、foo2返回函数
+此题作用域层级：全局 → Person → obj（foo1、foo2所在）→ foo1、foo2返回函数
 
 ```js:no-line-numbers
 var name = 'window' // 挂载到 window 上

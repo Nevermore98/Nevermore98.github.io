@@ -13,10 +13,10 @@ const name = 'window name'
 const obj = { name: 'obj name' }
 
 const foo = () => {
-  // 作用域链：AO(foo) -> GO
+  // 作用域层级：AO(foo) -> GO
   console.log(name) // 'window name'
   with (obj) {
-    // 作用域链：obj -> AO(foo) -> GO
+    // 作用域层级：obj -> AO(foo) -> GO
     console.log(name) // 'obj name'
   }
 }

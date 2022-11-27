@@ -226,7 +226,7 @@ console.log(n) // 200
 例二：函数声明中的变量提升，变量提升初始化到函数自己的作用域中（易错）
 
 ```js:no-line-numbers
-// 作用域链：foo({n: undefined -> 200}) -> Global({n: 100})
+// 作用域层级：foo({n: undefined -> 200}) -> Global({n: 100})
 function foo() {
   console.log(n) // undefined
   var n = 200
@@ -242,11 +242,11 @@ foo()
 ```js:no-line-numbers
 var n = 100
 
-// 作用域链：foo1({n: 100}) -> Global({n: 100})
+// 作用域层级：foo1({n: 100}) -> Global({n: 100})
 function foo1() {
   console.log(n) // 2: 100
 }
-// 作用域链：foo2({n: 200}) -> Global({n: 100})
+// 作用域层级：foo2({n: 200}) -> Global({n: 100})
 function foo2() {
   var n = 200
   console.log(n) // 1: 200
@@ -254,7 +254,7 @@ function foo2() {
 }
 
 foo2()
-// 作用域链：Global({n: 100})
+// 作用域层级：Global({n: 100})
 console.log(n) // 3: 100
 ```
 
@@ -262,7 +262,7 @@ console.log(n) // 3: 100
 
 ```js:no-line-numbers
 var n = 100
-// 作用域链：foo({n: undefined}) -> Global({n: 100})
+// 作用域层级：foo({n: undefined}) -> Global({n: 100})
 function foo() {
   console.log(n) // undefined
   return
@@ -275,13 +275,13 @@ foo()
 
 ```js:no-line-numbers
 var n = 100
-// 作用域链：foo({n: undefined}) -> Global({n: 100})
+// 作用域层级：foo({n: undefined}) -> Global({n: 100})
 function foo() {
   console.log(n) // undefined
   bar()
   return
   var n = 200
-  // 作用域链：bar -> foo({n: undefined}) -> Global({n: 100})
+  // 作用域层级：bar -> foo({n: undefined}) -> Global({n: 100})
   function bar() {
     console.log(n) // undefined
   }
@@ -310,7 +310,7 @@ foo()
 例五：在函数中使用 `var`、`let`、`const`关键字声明的变量不会成为全局对象的属性
 
 ```js:no-line-numbers
-// 作用域链：foo({n: 100}) -> Global
+// 作用域层级：foo({n: 100}) -> Global
 function foo() {
   var n = 100
 }

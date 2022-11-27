@@ -27,13 +27,13 @@ title: 闭包
 
 而与词法作用域相对的是动态作用域，函数的作用域是在函数调用的时候才决定的。
 
-在JS里，自由变量的查找会从本级作用域依次向外部作用域，直到查到最近的一个。又因为词法作用域，自由变量的绑定在函数定义时就已经确定。如下所示：
+引用到的自由变量沿着作用域链逐级向上查找，同名变量则使用最近的值。如果找到全局作用域还没找到，则报变量未定义的错误。如下所示：
 
 ```js:no-line-numbers
-// 作用域链：foo、bar -> Script({n: 'global n'}) -> Global(window)
+// 作用域层级：foo、bar({n: 'bar n'}) -> Script({n: 'global n'}) -> Global
 let n = 'global n'
 // 在预编译阶段，即在函数执行之前，foo 函数的作用链就指定好了
-// 所以自由变量 n 的查找在 Script 作用域中找到
+// 因为 foo 中没有声明变量 n，所以向上查找，在 Script 作用域中找到
 function foo() {
   console.log(n)
 }
@@ -48,13 +48,16 @@ bar(foo) // global n
 
 ![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220723035134.png)
 
-注意：在全局下使用 `let` 会在`Global` 作用域下生成一级 `Script` 作用域，使用 `var n = 'global n'` ，就只有一级 `Global` 作用域。
+注意：
+
+- 在全局下使用 `var` 和 `function` 声明的变量和函数会放入 `Global` 全局作用域。
+- 在全局下使用 `let`、`const`、`class` 等声明的全局变量会放入`Global` 全局作用域下一层的 `Script` 作用域。
 
 ### 高阶函数与嵌套调用
 
 定义外层函数为父函数，内层函数为子函数。
 
-高阶函数：
+**高阶函数：**
 
 1.函数作为参数
 
@@ -78,7 +81,7 @@ calc(x, y, add) // 30
 calc(x, y, sub) // -10
 ```
 
-2. 函数作为返回值
+2.函数作为返回值
 
 父函数嵌套（包裹）子函数：在父函数定义并返回子函数
 
@@ -97,26 +100,22 @@ console.log(add5(1)) // 6 等价于 makeAdder(5)(1)
 console.log(add10(1)) // 11 等价于 makeAdder(10)(1)
 ```
 
-嵌套调用：
+**嵌套调用：**
 
 父函数嵌套（包裹）子函数：在父函数中定义并调用子函数。
 
-每当外部函数被调用时，内部函数都会在内存中开辟新的空间。
-
-引用到的变量沿着作用域链逐级向上查找，同名变量使用最近的值。如果找到全局作用域还没找到，则报变量未定义的错误。
+内部函数 `foo3` 引用外部函数 `foo1` 的变量：
 
 ```js:no-line-numbers
-// 作用域链：foo3 -> foo2 -> foo1({n: 'foo1 n'}) -> 全局
+// 作用域层级：foo3 -> 闭包 foo2({foo3: ƒ}) -> 闭包 foo1({n: 'foo1 n'}) -> Script({n: 'global n'}) -> Global
 let n = 'global n'
+
 function foo1() {
   let n = 'foo1 n'
-
   function foo2() {
-    // let n = 'foo2 n'
-    
     function foo3() {
       console.log(n)
-      debugger // 闭包 (foo1)
+      console.dir(foo3)
     }
     foo3()
   }
@@ -124,6 +123,31 @@ function foo1() {
 }
 foo1() // foo1 n
 ```
+
+![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20221127231643.png)
+
+内部函数 `foo3` 不引用外部函数 `foo1` 的变量，则不将其加入到作用域链 [[Scopes]]中：
+
+```js:no-line-numbers
+// foo3 的作用域链：闭包 foo2({foo3: ƒ}) -> Script({n: 'global n'}) -> Global
+let n = 'global n'
+
+function foo1() {
+  let n = 'foo1 n'
+  function foo2() {
+    function foo3() {
+      let n = 'foo3 n'
+      console.log(n)
+      console.dir(foo3)
+    }
+    foo3()
+  }
+  foo2()
+}
+foo1() // foo3 n
+```
+
+![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20221127232045.png)
 
 ## 定义
 
@@ -153,22 +177,25 @@ foo()
 
 ### 狭义
 
-从实践（狭义）角度，我们只关注：因为内层函数引用外层函数作用域的自由变量，依然存在、不被回收的闭包，即使创建这个闭包的外层函数（作用域）都已销毁。
+从实践（狭义）角度，我们只关注：因内层函数引用外层函数作用域的自由变量，依然存在、不被回收的闭包，即使创建这个闭包的外层函数（作用域）都已销毁。
 
 ```js:no-line-numbers
+// 作用域层级：bar -> 闭包 foo({n: 'foo n'}) -> Script({tmp: ƒ}) -> Global
 function foo() {
   let n = 'foo n'
+  let m = 'foo m'
   function bar() {
     console.log(n)
-    debugger // 闭包 (foo){ n: "foo n" }
+    debugger // 闭包 (foo){ n: 'foo n' }
   }
   return bar
 }
 let tmp = foo()
 tmp() // foo n
+console.dir(tmp)
 ```
 
-![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220725220741.png)
+![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20221127230323.png)
 
 内层函数 `bar` 引用了外层函数作用域的变量 `n`，外层函数 `foo` 创建了闭包，但因为函数作用域是随着函数执行完毕就被销毁的，为了内层函数能够引用外层函数的变量，该闭包是必须存在、不能被回收的。
 
@@ -228,9 +255,7 @@ foo()
 
 ![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220724034456.png)
 
-foo 作用域链：`foo.LE(local)` → `foo.Closure{x: 'x', y: 'y'}` → `Script{n: 'n', foo: ƒ}` → `Global`
-
-![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220724035832.png)
+foo 即 son1 的作用域链：`foo.Closure{x: 'x', y: 'y'}` → `Script{n: 'n', foo: ƒ}` → `Global`
 
 每当 V8 引擎预编译函数时，遇到其内部子函数声明，会快速地扫描内部函数使用了当前父函数中的哪些自由变量，将这些变量加入到父函数的闭包对象中，最终这个闭包对象将作为这些内部子函数作用域链中的一员。
 
@@ -238,7 +263,7 @@ foo 作用域链：`foo.LE(local)` → `foo.Closure{x: 'x', y: 'y'}` → `Script
 
 ## 闭包创建场景
 
-1.父函数返回子函数，且子函数引用父函数的变量。
+1.父函数返回子函数，且子函数引用父函数的变量：
 
 执行父函数得到的返回值（即子函数）赋值给中间变量 `tmp`，在执行 `tmp`。
 
@@ -255,9 +280,10 @@ function father() {
 }
 let tmp = father()
 tmp() // father n
+console.dir(tmp)
 ```
 
-son 作用域链：`son.LE(local)` → `son.Closure{n: "father n"}` → `Script` → `Global`
+`tmp` 即 `son` 的作用域链：`son.Closure{n: "father n"}` → `Script` → `Global`
 
 ![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220723044039.png)
 
@@ -277,7 +303,7 @@ function father() {
 father()()
 ```
 
-2.父函数返回子函数，且子函数引用父函数的变量，执行父函数得到的返回值作为同级函数的参数
+2.父函数返回子函数，且子函数引用父函数的变量，执行父函数得到的返回值作为同级函数的参数：
 
 ```js:no-line-numbers
 function father() {
@@ -299,7 +325,7 @@ function foo(fn) {
 foo(father()) // father n
 ```
 
-3.父函数嵌套包裹子函数，父函数调用子函数，且子函数引用父函数的变量
+3.父函数嵌套包裹子函数，父函数调用子函数，且子函数引用父函数的变量：
 
 ```js:no-line-numbers
 function father() {
@@ -315,7 +341,7 @@ function father() {
 father() // father n
 ```
 
-4.父函数嵌套包裹多个子函数
+4.父函数嵌套包裹多个子函数：
 
 `Closure` 会被所有子函数的作用域链 `[[Scopes]]` 引用，所以想要 `Closure` 不被引用就需要使所有子函数都被销毁，避免内存泄漏。
 
@@ -335,7 +361,7 @@ function father() {
 father()
 ```
 
-5.函数赋值
+5.函数赋值：
 
 `foo` 创建的闭包对象被 `Script` 作用域的 `bar` 引用
 
@@ -353,7 +379,7 @@ foo()
 bar() // foo n
 ```
 
-6.循环赋值
+6.循环赋值：
 
 ```js:no-line-numbers
 // 不使用闭包
@@ -364,7 +390,7 @@ for (var i = 0; i < 6; i++) {
 } // 6 6 6 6 6 6
 
 // 使用闭包
-// 作用域链：setTimeout 的回调函数 -> 匿名立即执行函数 -> 全局
+// 作用域层级：setTimeout 的回调函数 -> 匿名立即执行函数 -> 全局
 for (var i = 0; i < 6; i++) {
   ;(function (j) {
     setTimeout(() => {
@@ -385,7 +411,7 @@ for (let i = 0; i < 6; i++) {
 ![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220723010835.png)
 
 - 不使用闭包：异步任务 `setTimeout` 放到任务队列，等到同步任务执行完毕再执行任务队列。同步任务 `for` 每次循环过程中`i` 自增并将 `console.log(i)` 放到任务队列，同步任务结束时 `i` 为 6，任务队列中有 6 个 `console.log(i)`，依次执行任务队列，最后输出 6 个 6
-- 使用闭包：作用域链：`setTimeout` 的回调函数 -> 匿名立即执行函数 -> 全局。回调函数引用了自由变量 `j`，向上查找，找到立即执行函数的形参 `j`，形参 `j` 接收实参 `i` 传入的值。回调函数内部使用了外部立即执行函数作用域的形参 `j`，形成了 6 个互不干扰的闭包。
+- 使用闭包：作用域层级：`setTimeout` 的回调函数 -> 匿名立即执行函数 -> 全局。回调函数引用了自由变量 `j`，向上查找，找到立即执行函数的形参 `j`，形参 `j` 接收实参 `i` 传入的值。回调函数内部使用了外部立即执行函数作用域的形参 `j`，形成了 6 个互不干扰的闭包。
 - 使用 `let`：形成 6 个互不干扰的块级作用域
 
 立即执行函数 `IIFE`(Immediately Invoked Function Expression)
@@ -396,7 +422,7 @@ for (let i = 0; i < 6; i++) {
 
 **块级作用域的引入使得 ES5 常用的立即执行函数不再需要了。**
 
-7.回调函数
+7.回调函数：
 
 使用回调函数就是在使用闭包
 
@@ -413,7 +439,7 @@ father() // father n
 
 `setTimeout` 的回调函数引用了上级 `father` 作用域的变量 `n`
 
-8.getter、setter
+8.getter、setter：
 
 ```js:no-line-numbers
 function createCache() {
@@ -559,32 +585,34 @@ window.f = fun() // 长久持有 fun2 的引用
 
 ## 总结
 
-定义：
+变量的查找：引用到的自由变量沿着作用域链逐级向上查找，同名变量则使用最近的值。如果找到全局作用域还没找到，则报变量未定义的错误。
+
+闭包定义：
 
 - 不严谨：闭包是能够访问**外层函数作用域**中的自由变量的**函数**。
 - 广义（理论）：闭包是能够访问**外层作用域**中的自由变量的函数与这个**自由变量**组成的**词法环境**。
 - 狭义（实践）：闭包是能够访问**外层函数作用域**中的自由变量的函数与这个**自由变量**组成的**词法环境**。
 
-创建过程：
+闭包创建过程：
 
 每个函数在预编译阶段都会生成一个空的闭包对象，无论这个闭包是否被使用。当函数执行完毕，函数实例被销毁，如果函数内部引用了外部自由变量，将自由变量加入到闭包对象中，闭包会被内层函数的作用域链引用，不会被回收；否则空的闭包没有被引用，会被释放回收。
 
-作用：
+闭包作用：
 
 **闭包最大的作用是可以在内层函数中访问到其外层函数的作用域。**
 
-特性：
+闭包特性：
 
 - 变量私有：不会污染全局
 - 变量生命周期长：不会随着函数执行结束而被回收
 
-应用：
+闭包应用：
 
 - 模块
 - 私有属性
 - 函数式编程：实现高阶函数，如柯里化、防抖节流
 
-缺点：
+闭包缺点：
 
 使用不当、滥用闭包才会造成内存泄漏。因为闭包包含外层函数的作用域，内存占用大，引用的内容多了，就会造成内存泄漏。
 
