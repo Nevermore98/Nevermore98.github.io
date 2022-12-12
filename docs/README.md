@@ -15,6 +15,11 @@ footer: © <a href="https://github.com/Nevermore98" target="_blank">Nevermore98<
   <br>
   <a href="https://beian.miit.gov.cn" target="_blank">粤ICP备2022039472号</a>&nbsp;&nbsp;&nbsp;
   <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44133002100217" target=" _blank" style="display:inline-block;height:20px;line-height:20px;"><img src="/gongan.png" style="float:left;">粤公网安备44133002100217号</a>
-copyrightText: MIT LICENSE
+  <br>
+  <br>
+  <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="/creative-commons-license-icon.png"></a>
+  <br>
+  本站所有内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh-Hans">CC BY-NC 4.0 协议</a>，转载须注明署名和出处，且不可用于商业用途。若与其他同步平台协议冲突，以本网站为准。
+copyrightText: CC BY-NC 4.0
 copyright: false
 ---

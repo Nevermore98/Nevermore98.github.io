@@ -26,7 +26,8 @@ export default hopeTheme({
   sidebarIcon: false,
 
   displayFooter: true,
-  footer: 'MIT Licensed | Copyright © 2022-present Nevermore阳',
+  footer:
+    '<a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh-Hans">CC BY-NC 4.0 协议</a> | Copyright © 2022-present Nevermore阳',
 
   pageInfo: ['Author', 'Original', 'Date', 'Category', 'Tag', 'ReadingTime'],
 
