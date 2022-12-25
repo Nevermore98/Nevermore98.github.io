@@ -3,7 +3,7 @@ import navbar from './navbar'
 import sidebar from './sidebar'
 
 export default hopeTheme({
-  hostname: 'http://monkee.online',
+  hostname: 'https://monkee.online',
 
   // author: false,
 

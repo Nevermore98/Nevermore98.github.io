@@ -18,11 +18,7 @@ git branch -m main
 git commit -m 'deploy'
 
 # 推送至服务器，注意是 main 分支
-git remote add origin git@monkee.online:/home/www/website/blog.git
-git push -f git@monkee.online:/home/www/website/blog.git main
-
-# 推送至 Gitee，注意是 main 分支
-git remote add origin git@gitee.com:Nevermore98/Nevermore98.git
-git push -u origin main -f
+git remote add origin git@175.178.127.246:/home/www/website/blog.git
+git push -f git@175.178.127.246:/home/www/website/blog.git main
 
 cd -

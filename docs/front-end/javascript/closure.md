@@ -255,7 +255,7 @@ foo()
 
 ![](https://nevermore-picbed-1304219157.cos.ap-guangzhou.myqcloud.com/20220724034456.png)
 
-foo 即 son1 的作用域链：`foo.Closure{x: 'x', y: 'y'}` → `Script{n: 'n', foo: ƒ}` → `Global`
+foo 即 son1 的作用域链：`father.Closure{x: 'x', y: 'y'}` → `Script{n: 'n', foo: ƒ}` → `Global`
 
 每当 V8 引擎预编译函数时，遇到其内部子函数声明，会快速地扫描内部函数使用了当前父函数中的哪些自由变量，将这些变量加入到父函数的闭包对象中，最终这个闭包对象将作为这些内部子函数作用域链中的一员。
 
@@ -621,9 +621,9 @@ window.f = fun() // 长久持有 fun2 的引用
 - [闭包——MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures)
 - [JavaScript深入之词法作用域和动态作用域](https://github.com/mqyqingfeng/blog/issues/3)
 - [JavaScript深入之闭包](https://github.com/mqyqingfeng/Blog/issues/9)
-- [头等函数——维基百科]([https://zh.wikipedia.org/wiki/头等函数](https://zh.wikipedia.org/wiki/头等函数))
-- [闭包是什么？从为什么会有闭包讲起！]([https://juejin.cn/post/7084549768067678245](https://juejin.cn/post/7084549768067678245))
-- [一文颠覆大众对闭包的认知]([https://juejin.cn/post/7079995358624874509](https://juejin.cn/post/7079995358624874509))
-- [前端基础进阶（四）：详细图解作用域链与闭包]([https://segmentfault.com/a/1190000012646221](https://segmentfault.com/a/1190000012646221))
-- [一篇文章看懂JS闭包，都要2020年了，你怎么能还不懂闭包？]([https://www.cnblogs.com/echolun/p/11897004.html](https://www.cnblogs.com/echolun/p/11897004.html))
+- [头等函数——维基百科](https://zh.wikipedia.org/wiki/头等函数)
+- [闭包是什么？从为什么会有闭包讲起！](https://juejin.cn/post/7084549768067678245)
+- [一文颠覆大众对闭包的认知](https://juejin.cn/post/7079995358624874509)
+- [前端基础进阶（四）：详细图解作用域链与闭包](https://segmentfault.com/a/1190000012646221)
+- [一篇文章看懂JS闭包，都要2020年了，你怎么能还不懂闭包？](https://www.cnblogs.com/echolun/p/11897004.html)
 - [JS 闭包经典使用场景和含闭包必刷题](https://juejin.cn/post/6937469222251560990)

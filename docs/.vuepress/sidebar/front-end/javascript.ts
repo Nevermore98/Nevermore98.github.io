@@ -17,5 +17,7 @@ export const javascript = arraySidebar([
   'promise-implement',
   'async-await',
   'iterator-generator',
-  'eventLoop'
+  'eventLoop',
+  'ajax',
+  'array-unique'
 ])
